@@ -1,0 +1,28 @@
+{
+  "usuarios": [
+    {
+      "id": "0",
+      "nome": "João",
+      "login": "aaa",
+      "senha": "123"
+    },
+    {
+      "id": "1",
+      "nome": "Pedro",
+      "login": "bbb",
+      "senha": "456"
+    },
+    {
+      "id": "2",
+      "nome": "Roberta",
+      "login": "ccc",
+      "senha": "789"
+    },
+    {
+      "id": "3",
+      "nome": "Albertin",
+      "login": "ddd",
+      "senha": "333"
+    }
+  ]
+}
