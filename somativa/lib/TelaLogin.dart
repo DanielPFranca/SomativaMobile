@@ -24,24 +24,6 @@ class _telaLoginState extends State<telaLogin> {
 
   String? userLogin;
   String? userSenha;
-  // _get() async {
-  //   String url = "http://10.109.83.13:3000/usuarios"; // url com a api
-  //   http.Response response =
-  //       await http.get(Uri.parse(url)); // espera o retorno da api
-
-  //   var data = json.decode(response.body); // decodifica o dado da api
-
-  //   userLogin = data[0]['login'];
-  //   userSenha = data[0]['senha'];
-
-  //   if (user.text == userLogin && password.text == userSenha) {
-  //     print('Login');
-  //   }
-  //   Navigator.push(context, 
-  //   MaterialPageRoute(builder: (context) => Tela2()));
-
-
-  // }
 
   _verificarlogin() async {
   String url = "http://10.109.83.13:3000/usuarios";

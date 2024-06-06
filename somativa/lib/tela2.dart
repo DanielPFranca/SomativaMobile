@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-Future<List<Filme>> fetchFilmes() async {
+Future<List<Filme>> getFilmes() async {
   final response = await http.get(Uri.parse(
       'https://raw.githubusercontent.com/danielvieira95/DESM-2/master/filmes.json'));
 
@@ -10,9 +10,10 @@ Future<List<Filme>> fetchFilmes() async {
     List jsonResponse = json.decode(response.body);
     return jsonResponse.map((filme) => Filme.fromJson(filme)).toList();
   } else {
-    throw Exception('Falha ao carregar filmes');
+    throw Exception('Não foi possivel caregar os filmes !!!');
   }
 }
+
 
 class Filmes extends StatefulWidget {
   @override
@@ -25,41 +26,36 @@ class _FilmesState extends State<Filmes> {
   @override
   void initState() {
     super.initState();
-    futureFilmes = fetchFilmes();
+    futureFilmes = getFilmes();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Filmes'),
+        title: Text('MobileFlix'),
       ),
       body: Center(
         child: FutureBuilder<List<Filme>>(
           future: futureFilmes,
           builder: (context, snapshot) {
-            if (snapshot.hasData) {
               List<Filme> filmes = snapshot.data!;
               return ListView.builder(
                 itemCount: filmes.length,
                 itemBuilder: (context, index) {
                   return ListTile(
                     leading: Image.network(
-                    filmes[index].imagem,
-                    width: 150,
-                    height: 150,
-                    fit: BoxFit.cover,
-                  ),
+                      filmes[index].imagem,
+                      width: 150,
+                      height: 150,
+                      fit: BoxFit.cover,
+                    ),
                     title: Text(filmes[index].nome),
                     subtitle: Text(
-                    'Lançamento: ${filmes[index].ano} Nota: ${filmes[index].nota}'),);
+                        'Lançamento: ${filmes[index].ano} Nota: ${filmes[index].nota}'),
+                  );
                 },
               );
-            } else if (snapshot.hasError) {
-              return Text("${snapshot.error}");
-            }
-
-            return CircularProgressIndicator();
           },
         ),
       ),
