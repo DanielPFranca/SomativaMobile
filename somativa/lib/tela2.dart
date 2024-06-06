@@ -1,102 +1,93 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:http/http.dart' as http;
 
-class Tela2 extends StatefulWidget {
-  const Tela2({super.key});
+Future<List<Filme>> fetchFilmes() async {
+  final response = await http.get(Uri.parse(
+      'https://raw.githubusercontent.com/danielvieira95/DESM-2/master/filmes.json'));
 
-  @override
-  State<Tela2> createState() => _Tela2State();
+  if (response.statusCode == 200) {
+    List jsonResponse = json.decode(response.body);
+    return jsonResponse.map((filme) => Filme.fromJson(filme)).toList();
+  } else {
+    throw Exception('Falha ao carregar filmes');
+  }
 }
 
-class _Tela2State extends State<Tela2> {
-  TextEditingController id = TextEditingController();
-  TextEditingController nome = TextEditingController();
-  TextEditingController preco = TextEditingController();
-  TextEditingController quantidade = TextEditingController();
+class Filmes extends StatefulWidget {
+  @override
+  _FilmesState createState() => _FilmesState();
+}
 
-  String url = "http://10.109.83.13:3000/produtos";
+class _FilmesState extends State<Filmes> {
+  late Future<List<Filme>> futureFilmes;
 
-  get() async {
-    http.Response resposta = await http.get(Uri.parse(url));
-    var dado = jsonDecode(resposta.body) as List;
-    print(dado);
-  }
-
-  _post() {
-    // estrutura do arquivo json para realizar o post
-    Map<String, dynamic> produto_a = {
-      "id": id.text,
-      "nome": nome.text,
-      "preco": preco.text,
-      "quantidade": quantidade.text
-    };
-    http.post(
-      Uri.parse(url),
-      headers: <String, String>{
-        'Content-type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(produto_a),
-    );
-    print("Post: ${produto_a}");
-    //Navigator.push(context,MaterialPageRoute(builder: (context) => Tela3("${nome.text}", "${preco.text}", "${quantidade.text}" )));
+  @override
+  void initState() {
+    super.initState();
+    futureFilmes = fetchFilmes();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Cadastro de Pordutos"),
+        title: Text('Filmes'),
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              keyboardType: TextInputType.number,
-              controller: id,
-              decoration: InputDecoration(
-                  labelText: 'ID Produto',
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(60))),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              keyboardType: TextInputType.name,
-              controller: nome,
-              decoration: InputDecoration(
-                  labelText: 'Produto',
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(60))),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              keyboardType: TextInputType.number,
-              controller: preco,
-              decoration: InputDecoration(
-                  labelText: 'Preço',
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(60))),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              keyboardType: TextInputType.number,
-              controller: quantidade,
-              decoration: InputDecoration(
-                  labelText: 'Quantidade',
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(60))),
-            ),
-          ),
-          ElevatedButton(onPressed: _post, child: Text('Cadastrar'))
-        ],
+      body: Center(
+        child: FutureBuilder<List<Filme>>(
+          future: futureFilmes,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              List<Filme> filmes = snapshot.data!;
+              return ListView.builder(
+                itemCount: filmes.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    leading: Image.network(
+                    filmes[index].imagem,
+                    width: 150,
+                    height: 150,
+                    fit: BoxFit.cover,
+                  ),
+                    title: Text(filmes[index].nome),
+                    subtitle: Text(
+                    'Lançamento: ${filmes[index].ano} Nota: ${filmes[index].nota}'),);
+                },
+              );
+            } else if (snapshot.hasError) {
+              return Text("${snapshot.error}");
+            }
+
+            return CircularProgressIndicator();
+          },
+        ),
       ),
+    );
+  }
+}
+
+class Filme {
+  final String nome;
+  final String imagem;
+  final String duracao;
+  final String ano;
+  final String nota;
+
+  Filme(
+      {required this.nome,
+      required this.imagem,
+      required this.duracao,
+      required this.ano,
+      required this.nota});
+
+  factory Filme.fromJson(Map<String, dynamic> json) {
+    return Filme(
+      nome: json['nome'],
+      imagem: json['imagem'],
+      duracao: json['duração'],
+      ano: json['ano de lançamento'],
+      nota: json['nota'],
     );
   }
 }

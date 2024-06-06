@@ -59,7 +59,7 @@ class _telaLoginState extends State<telaLogin> {
 
   if (encuser) {
     print("Usuário encontrado");
-    Navigator.push(context, MaterialPageRoute(builder: (context) => Tela2()));
+    Navigator.push(context, MaterialPageRoute(builder: (context) => Filmes()));
     encuser = false;
     user.text = "";
     password.text = "";
@@ -128,7 +128,7 @@ class _telaLoginState extends State<telaLogin> {
           ElevatedButton(onPressed: _verificarlogin, child: Text('Login')),
           ElevatedButton(onPressed: () {
             Navigator.push(context, MaterialPageRoute(builder: (context) => Cadastro()));
-          }, child: Text('Cadastrar'))
+          }, child: Text('Cadastrar')),
         ],
       ),
     );
